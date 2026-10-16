@@ -4,17 +4,30 @@ declare(strict_types=1);
 
 namespace openvk\Web\Models\Entities;
 
-use openvk\Web\Models\RowModel;
-use openvk\Web\Models\Entities\User;
-use Chandler\Database\DatabaseConnection;
 use Parsedown;
 
-class FAQ extends RowModel
+class FAQ
 {
-    
-    protected $tableName = "known_issue";
-
     private $faqDir = OPENVK_ROOT . "/data/knowledgebase/faq";
+
+    public function getIssues(bool $admin = false): array
+    {
+        $issues = chandler_parse_yaml($this->faqDir . "/known-issues.yml");
+        
+        foreach ($issues as $i => $issue) {
+            if (!$admin and $issue["for_admin"]) {
+                unset($issues[$i]);
+                continue;
+            }
+            if (!$issue["enabled"]) {
+                unset($issues[$i]);
+                continue;
+            }
+            $issues[$i]["id"] = $i;
+        }
+
+        return $issues;
+    }
 
     public function getTopicList(string $lang): array
     {

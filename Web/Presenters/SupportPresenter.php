@@ -46,6 +46,7 @@ final class SupportPresenter extends OpenVKPresenter
             } else {
                 $this->template->isTopic  = False;
                 $this->template->topics   = $this->faq->getTopicPreviews($lang);
+                $this->template->issues   = $this->faq->getIssues();
             }
         }
 

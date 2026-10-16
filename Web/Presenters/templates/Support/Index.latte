@@ -96,6 +96,25 @@
                 </div>
             </div>
         {else}
+            {if !empty($issues)}
+                <div class="faq-issues">
+                    <table border="0" cellspacing="2px">
+                        <tr>
+                            <td width="28px" valign="top">
+                                <div class="faq-icon_17"></div>
+                            </td>
+                            <td valign="top">
+                                <div class="faq-issue_subtitle">
+                                    {count($issues) > 1 ? tr('support_known_issues') : tr('support_known_issue')}
+                                </div>
+                                <h1 class="faq-issue_title">{$issues['kakao']['title']}</h1>
+                                <p class="faq-issues_description">{$issues['kakao']['description']}</p>
+                                <button class="button">{count($issues) > 1 ? tr('support_known_issues_ok') : tr('support_known_issue_ok')}</button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            {/if}
             <div class="faq-box">
                 <table n:foreach="$topics as $t" border="0" cellspacing="2px">
                     <tr>

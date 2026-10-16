@@ -43,6 +43,27 @@
 
 .faq-topic table { margin-left: 9px; }
 
+.faq-issues {
+    background: #f7f7f7;
+    margin: -13px -7px 13px -10px;
+    padding: 4px 3px 17px;
+    border-bottom: solid 1px #d3d3d3;
+}
+
+.faq-issue_subtitle {
+    height: 28px;
+    line-height: 2.4;
+    color: #6d6262;
+    cursor: pointer;
+}
+
+.faq-issue_title {
+    font-size: 19px;
+    margin: 0;
+}
+
+.faq-issues_description { margin: 6px 0 11px; }
+
 .faq-back {
     background: #f7f7f7;
     margin: -3px -6px 11px;

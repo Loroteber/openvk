@@ -1438,7 +1438,9 @@
 "confirm_report_submission_4" = "Сообщить автору жалобы об игнорировании";
 
 "support_known_issue" = "Известная проблема";
+"support_known_issues" = "Известная проблемы";
 "support_known_issue_ok" = "Это решает мою проблему";
+"support_known_issues_ok" = "Это решает мою проблемы";
 
 "support_faq_back" = "На главную";
 "support_faq_error_title" = "Не удалось получить раздел справочника";
