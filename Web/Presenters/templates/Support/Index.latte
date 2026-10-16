@@ -6,6 +6,8 @@
 {/block}
 
 {block content}
+    {css "css/faq.css"}
+
     {var $isMain = $mode === 'faq'}
     {var $isNew  = $mode === 'new'}
     {var $isList = $mode === 'list'}
@@ -13,7 +15,10 @@
     {if $thisUser}
         <div class="tabs">
             <div n:attr="id => ($isMain ? 'activetabs' : 'ki')" class="tab">
-                <a n:attr="id => ($isMain ? 'act_tab_a' : 'ki')" href="/support">{_support_faq}</a>
+                <a n:attr="id => ($isMain ? 'act_tab_a' : 'ki')" href="/support">{_support_main}</a>
+            </div>
+            <div id="ki" class="tab">
+                <a href="/support/admin" id="ki">{_support_admin_tab}</a>
             </div>
             <div n:if="$count > 0" n:attr="id => ($isList ? 'activetabs' : 'ki')" class="tab">
                 <a n:attr="id => ($isList ? 'act_tab_a' : 'ki')" href="/support?act=list">{_support_list}</a>
@@ -49,11 +54,63 @@
     {/if}
 
     {if $isMain}
-        <h4>{_support_faq}</h4><br />
-        <div n:foreach="$faq as $section" class="faq">
-            <div id="faqhead">{$section[0]}</div>
-            <div id="faqcontent">{$section[1]|noescape}</div>
-        </div>
+        {if $isTopic}
+            <div id="search_page" class="faq-topic">
+                <div class="page_wrap_content_main">
+                    {if !empty($topic)}
+                        <div class="faq-back">
+                            <a href="/support">« {_support_faq_back}</a>
+                            | <a href="/support/admin?act=editFaq?topic=sex">{_support_admin_edit_topic}</a>
+                        </div>
+                        <table border="0" cellspacing="2px">
+                            <tbody>
+                                <tr>
+                                    <td width="28px" valign="top">
+                                        <div class="faq-icon_{$topic['icon']}"></div>
+                                    </td>
+                                    <td width="100%">
+                                        <h4 class="faq-h4">{$topic['title']}</h4>
+                                        <div n:foreach="$topic['content'] as $c">
+                                            <span onclick="hideAnswer(this)" n:class="$question === (string) $c['id'] ? 'active', 'faq-q'">{$c['q']}</span>
+                                            <div n:attr="style => $question !== (string) $c['id'] ? 'display: none;' : null">
+                                                <div class="faq-a">{$c['a']|noescape}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    {else}
+                        <center>
+                            <img src="/assets/packages/static/openvk/img/oof.apng" alt="{_error}" style="width: 30%;" />
+                            <h4 class="faq-h4">{_support_faq_error_title}</h4>
+                            <p>{_support_faq_error_msg}</p>
+                            <a href="/support">{_support_faq_back}</a>
+                        </center>
+                    {/if}
+                </div>
+                <div class="verticalGrayTabsWrapper">
+                    <div class="verticalGrayTabs with_padding">
+                        <a n:foreach="$topics as $t" n:attr="id => $topic['url'] === $t['url'] ? 'used' : null" href="/support?topic={$t['url']}">{$t['title']}</a>
+                    </div>
+                </div>
+            </div>
+        {else}
+            <div class="faq-box">
+                <table n:foreach="$topics as $t" border="0" cellspacing="2px">
+                    <tr>
+                        <td width="28px" valign="top">
+                            <div class="faq-icon_{$t['icon']}"></div>
+                        </td>
+                        <td valign="top">
+                            <h4 class="faq-h4">{$t['title']}</h4>
+                            <a n:foreach="$t['questions'] as $q" class="faq-q compact" href="/support?topic={$t['url']}&question={$q['index']}">{$q['title']}</a>
+                            <a class="faq-more" href="/support?topic={$t['url']}">{_archive_more}  »</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        {/if}
     {/if}
 
     {if $isList}
@@ -95,4 +152,5 @@
             ]}
         </div>
     {/if}
+    {script "js/al_faq.js"}
 {/block}

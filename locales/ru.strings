@@ -1366,6 +1366,7 @@
 "support_status_2" = "Закрыто";
 "support_greeting_hi" = "Здравствуйте, $1!";
 "support_greeting_regards" = "С уважением,<br/>команда поддержки $1.";
+"support_main" = "Главная";
 "support_faq" = "Часто задаваемые вопросы";
 "support_list" = "Список обращений";
 "support_new" = "Новое обращение";
@@ -1435,6 +1436,18 @@
 "confirm_report_submission_2" = "Какой будет причина удаления?";
 "confirm_report_submission_3" = "А причина бана пользователя?";
 "confirm_report_submission_4" = "Сообщить автору жалобы об игнорировании";
+
+"support_known_issue" = "Известная проблема";
+"support_known_issue_ok" = "Это решает мою проблему";
+
+"support_faq_back" = "На главную";
+"support_faq_error_title" = "Не удалось получить раздел справочника";
+"support_faq_error_msg" = "Либо его нет, либо он временно недоступен на Вашем языке.";
+
+"support_admin_tab" = "Редактирование справочника";
+"support_admin_current_known_issue" = "Текущая известная проблема";
+"support_admin_edit_topic" = "Редактировать раздел";
+"support_admin_faq_hint": "Поддерживаются теги HTML и Markdown.";
 
 /* Invite */
 
