@@ -44,9 +44,24 @@ final class SupportPresenter extends OpenVKPresenter
                 $this->template->question = $this->queryParam("question");
                 $this->template->topics   = $this->faq->getTopicList($lang);
             } else {
-                $this->template->isTopic  = False;
-                $this->template->topics   = $this->faq->getTopicPreviews($lang);
-                $this->template->issues   = $this->faq->getIssues();
+                $closedIssues  = json_decode($_COOKIE["closed_issues"] ?? "[]", true);
+                $currentIssues = $this->faq->getIssues();
+                $hasUnread     = False;
+
+                foreach ($currentIssues as $i => $issue) {
+                    if (!in_array($i, $closedIssues)) {
+                        unset($currentIssues[$i]);
+                        $currentIssues = [$i => $issue] + $currentIssues;
+                        $hasUnread = True;
+                    }
+                }
+
+                $this->template->isTopic    = False;
+                $this->template->topics     = $this->faq->getTopicPreviews($lang);
+                $this->template->issues     = $currentIssues;
+                $this->template->issuesJson = json_encode($currentIssues, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+                $this->template->hasUnread  = $hasUnread;
+                $this->template->firstIssue = reset($currentIssues) ?: null;
             }
         }
 

@@ -43,10 +43,10 @@
 
 .faq-topic table { margin-left: 9px; }
 
-.faq-issues {
+.faq-issue {
     background: #f7f7f7;
     margin: -13px -7px 13px -10px;
-    padding: 4px 3px 17px;
+    padding: 4px 3px 0;
     border-bottom: solid 1px #d3d3d3;
 }
 
@@ -57,12 +57,14 @@
     cursor: pointer;
 }
 
-.faq-issue_title {
+.faq-issue h1 {
     font-size: 19px;
     margin: 0;
 }
 
-.faq-issues_description { margin: 6px 0 11px; }
+.faq-issue p { margin: 6px 0 11px; }
+
+.faq-issue button { margin-bottom: 20px; }
 
 .faq-back {
     background: #f7f7f7;
@@ -93,6 +95,17 @@
     border-bottom: none;
     margin-top: 7px;
 }
+
+[class^="faq-arrow_"] {
+    background: url(/assets/packages/static/openvk/img/faq_arrow.png);
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    margin-right: 4px;
+    user-select: none;
+}
+
+.faq-arrow_back { background-position: 0 -12px; }
 
 [class^="faq-icon_"] {
     background: url(/assets/packages/static/openvk/img/faq_icons.png);

@@ -97,19 +97,23 @@
             </div>
         {else}
             {if !empty($issues)}
-                <div class="faq-issues">
+                <div class="faq-issue">
                     <table border="0" cellspacing="2px">
                         <tr>
                             <td width="28px" valign="top">
                                 <div class="faq-icon_17"></div>
                             </td>
-                            <td valign="top">
-                                <div class="faq-issue_subtitle">
+                            <td width="100%" valign="top">
+                                <div class="faq-issue_subtitle" onclick="hideIssue(this)">
                                     {count($issues) > 1 ? tr('support_known_issues') : tr('support_known_issue')}
                                 </div>
-                                <h1 class="faq-issue_title">{$issues['kakao']['title']}</h1>
-                                <p class="faq-issues_description">{$issues['kakao']['description']}</p>
-                                <button class="button">{count($issues) > 1 ? tr('support_known_issues_ok') : tr('support_known_issue_ok')}</button>
+                                <div id="faq-issue" n:attr="style => !$hasUnread ? 'display: none;' : null">
+                                    <a n:if="count($issues) > 1" class="faq-arrow_back" onclick="changeIssue(true)"></a>
+                                    <a n:if="count($issues) > 1" class="faq-arrow_forward" onclick="changeIssue()"></a>
+                                    <h1>{$firstIssue['title']}</h1>
+                                    <p>{$firstIssue['description']|noescape}</p>
+                                    <button onclick="hideIssueButton(this)" class="button">{count($issues) > 1 ? tr('support_known_issues_ok') : tr('support_known_issue_ok')}</button>                                
+                                </div>
                             </td>
                         </tr>
                     </table>
@@ -171,5 +175,8 @@
             ]}
         </div>
     {/if}
+    <script>
+        const issues = Object.values({$issuesJson|noescape});
+    </script>
     {script "js/al_faq.js"}
 {/block}
