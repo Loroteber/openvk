@@ -36,16 +36,21 @@ final class SupportPresenter extends OpenVKPresenter
         $this->template->mode = in_array($this->queryParam("act"), ["faq", "new", "list"]) ? $this->queryParam("act") : "faq";
 
         if ($this->template->mode === "faq") {
-            $lang = Session::i()->get("lang", "ru");
+            $lang = Session::i()->get("lang", getDefaultLanguage());
+
+            $isAdmin = $this->user->identity->getChandlerUser()->can("access")->model("admin")->whichBelongsTo(NULL) 
+                || $this->user->identity->getChandlerUser()->can("write")->model('openvk\Web\Models\Entities\TicketReply')->whichBelongsTo(0)
+                || $this->user->identity->getChandlerUser()->can("admin")->model('openvk\Web\Models\Entities\Report')->whichBelongsTo(0)
+                || $this->user->identity->getChandlerUser()->can("write")->model('openvk\Web\Models\Entities\Ban')->whichBelongsTo(0);
 
             if ($this->queryParam("topic") !== null) {
                 $this->template->isTopic  = True;
-                $this->template->topic    = $this->faq->getTopic($this->queryParam("topic"), $lang);
+                $this->template->topic    = $this->faq->getTopic($this->queryParam("topic"), $lang, $isAdmin);
                 $this->template->question = $this->queryParam("question");
-                $this->template->topics   = $this->faq->getTopicList($lang);
+                $this->template->topics   = $this->faq->getTopicList($lang, $isAdmin);
             } else {
-                $closedIssues  = json_decode($_COOKIE["closed_issues"] ?? "[]", true);
-                $currentIssues = $this->faq->getIssues();
+                $closedIssues  = json_decode($_COOKIE["faq_closed_issues"] ?? "[]", true);
+                $currentIssues = $this->faq->getIssues($lang, $isAdmin);
                 $hasUnread     = False;
 
                 foreach ($currentIssues as $i => $issue) {
@@ -57,12 +62,13 @@ final class SupportPresenter extends OpenVKPresenter
                 }
 
                 $this->template->isTopic    = False;
-                $this->template->topics     = $this->faq->getTopicPreviews($lang);
+                $this->template->topics     = $this->faq->getTopicPreviews($lang, $isAdmin);
                 $this->template->issues     = $currentIssues;
-                $this->template->issuesJson = json_encode($currentIssues, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
                 $this->template->hasUnread  = $hasUnread;
                 $this->template->firstIssue = reset($currentIssues) ?: null;
             }
+
+            $this->template->issuesJson = json_encode($currentIssues, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
         }
 
         $this->template->count = $this->tickets->getTicketsCountByUserId($this->user->id);

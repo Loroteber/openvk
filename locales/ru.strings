@@ -1444,7 +1444,8 @@
 
 "support_faq_back" = "На главную";
 "support_faq_error_title" = "Не удалось получить раздел справочника";
-"support_faq_error_msg" = "Либо его нет, либо он временно недоступен на Вашем языке.";
+"support_faq_error_msg" = "Либо его не стало, либо его и не было вовсе...";
+"support_faq_show_untranslated" = "Показывать непереведённые разделы";
 
 "support_admin_tab" = "Редактирование справочника";
 "support_admin_current_known_issue" = "Текущая известная проблема";

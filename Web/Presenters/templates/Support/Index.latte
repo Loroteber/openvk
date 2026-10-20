@@ -3,6 +3,9 @@
 
 {block header}
     {_menu_help}
+    <div n:if="$mode === 'faq' && !$isTopic" style="float: right;">
+        <a onclick="faqSettings()">{_additional}</a>
+    </div>
 {/block}
 
 {block content}
@@ -11,13 +14,15 @@
     {var $isMain = $mode === 'faq'}
     {var $isNew  = $mode === 'new'}
     {var $isList = $mode === 'list'}
+    
+    {var $isAdmin = $thisUser->getChandlerUser()->can("access")->model("admin")->whichBelongsTo(NULL)}
 
     {if $thisUser}
         <div class="tabs">
             <div n:attr="id => ($isMain ? 'activetabs' : 'ki')" class="tab">
                 <a n:attr="id => ($isMain ? 'act_tab_a' : 'ki')" href="/support">{_support_main}</a>
             </div>
-            <div id="ki" class="tab">
+            <div n:if="$isAdmin" id="ki" class="tab">
                 <a href="/support/admin" id="ki">{_support_admin_tab}</a>
             </div>
             <div n:if="$count > 0" n:attr="id => ($isList ? 'activetabs' : 'ki')" class="tab">
@@ -54,13 +59,14 @@
     {/if}
 
     {if $isMain}
+        {var $showUntrans = $_COOKIE["faq_show_untranslated"] === "1"}
         {if $isTopic}
             <div id="search_page" class="faq-topic">
                 <div class="page_wrap_content_main">
                     {if !empty($topic)}
                         <div class="faq-back">
                             <a href="/support">« {_support_faq_back}</a>
-                            | <a href="/support/admin?act=editFaq?topic=sex">{_support_admin_edit_topic}</a>
+                            | <a n:if="$isAdmin" href="/support/admin?act=editFaq?topic=sex">{_support_admin_edit_topic}</a>
                         </div>
                         <table border="0" cellspacing="2px">
                             <tbody>
@@ -91,7 +97,7 @@
                 </div>
                 <div class="verticalGrayTabsWrapper">
                     <div class="verticalGrayTabs with_padding">
-                        <a n:foreach="$topics as $t" n:attr="id => $topic['url'] === $t['url'] ? 'used' : null" href="/support?topic={$t['url']}">{$t['title']}</a>
+                        <a n:foreach="$topics as $t" n:if="$t['translated'] || $showUntrans" n:attr="id => $topic['url'] === $t['url'] ? 'used' : null" href="/support?topic={$t['url']}">{$t['title']}</a>
                     </div>
                 </div>
             </div>
@@ -120,7 +126,7 @@
                 </div>
             {/if}
             <div class="faq-box">
-                <table n:foreach="$topics as $t" border="0" cellspacing="2px">
+                <table n:foreach="$topics as $t" n:if="$t['translated'] || $showUntrans" border="0" cellspacing="2px">
                     <tr>
                         <td width="28px" valign="top">
                             <div class="faq-icon_{$t['icon']}"></div>
@@ -129,6 +135,7 @@
                             <h4 class="faq-h4">{$t['title']}</h4>
                             <a n:foreach="$t['questions'] as $q" class="faq-q compact" href="/support?topic={$t['url']}&question={$q['index']}">{$q['title']}</a>
                             <a class="faq-more" href="/support?topic={$t['url']}">{_archive_more}  »</a>
+                            <span n:if="$t['for_admin']">опаа у меня тоже есть птички</span>
                         </td>
                     </tr>
                 </table>
@@ -176,7 +183,7 @@
         </div>
     {/if}
     <script>
-        const issues = Object.values({$issuesJson|noescape});
+        let issues = Object.values({$issuesJson|noescape});
     </script>
     {script "js/al_faq.js"}
 {/block}

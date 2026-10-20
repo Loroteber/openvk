@@ -10,57 +10,70 @@ class FAQ
 {
     private $faqDir = OPENVK_ROOT . "/data/knowledgebase/faq";
 
-    public function getIssues(bool $admin = false): array
+    public function getIssues(string $lang, bool $admin): array
     {
         $issues = chandler_parse_yaml($this->faqDir . "/known-issues.yml");
         
         foreach ($issues as $i => $issue) {
-            if (!$admin and $issue["for_admin"]) {
-                unset($issues[$i]);
-                continue;
-            }
             if (!$issue["enabled"]) {
                 unset($issues[$i]);
                 continue;
             }
-            $issues[$i]["id"] = $i;
+            
+            if (!$admin and $issue["for_admin"]) {
+                unset($issues[$i]);
+                continue;
+            }
+
+            $issues[$i]["title"]       = $issue["title"][$lang] ?? $issue["title"][getDefaultLanguage()];
+            $issues[$i]["description"] = $issue["description"][$lang] ?? $issue["description"][getDefaultLanguage()];
+            $issues[$i]["id"]          = $i;
         }
 
         return $issues;
     }
 
-    public function getTopicList(string $lang): array
+    public function getTopicList(string $lang, bool $admin): array
     {
         $topics = [];
 
         foreach (chandler_parse_yaml($this->faqDir . "/topics.yml") as $url => $topic) {
-            if (!isset($topic["name"][$lang])) {
+            if (!$topic["enabled"]) {
+                continue;
+            } 
+
+            if (!$admin and $topic["for_admin"]) {
                 continue;
             }
             
             $topics[] = [
-                "url"       => $url,
-                "title"     => $topic["name"][$lang],
-                "for_admin" => $topic["for_admin"]
+                "url"        => $url,
+                "title"      => $topic["title"][$lang] ?? $topic["title"][getDefaultLanguage()],
+                "for_admin"  => $topic["for_admin"],
+                "translated" => isset($topic["title"][$lang])
             ];
         }
 
         return $topics;
     }
 
-    public function getTopicPreviews(string $lang): array
+    public function getTopicPreviews(string $lang, bool $admin): array
     {
         $topics = [];
 
-        foreach (chandler_parse_yaml($this->faqDir . "/topics.yml") as $name => $topic) {
-            if (!isset($topic["name"][$lang])) { 
+        foreach (chandler_parse_yaml($this->faqDir . "/topics.yml") as $name => $topic) {      
+            if (!$topic["enabled"]) {
+                continue;
+            }    
+
+            if (!$admin and $topic["for_admin"]) {
                 continue;
             }
-            
+
             if (file_exists("$this->faqDir/$name.$lang.md")) {
                 $file = "$this->faqDir/$name.$lang.md";
-            } elseif (file_exists("$this->faqDir/$name.md")) {
-                $file = "$this->faqDir/$name.md";
+            } elseif (file_exists($this->faqDir . "/" . $name . "." . getDefaultLanguage() . ".md")) {
+                $file = $this->faqDir . "/" . $name . "." . getDefaultLanguage() . ".md";
             } else {
                 continue;
             }
@@ -84,18 +97,19 @@ class FAQ
             }
 
             $topics[] = [
-                "url"       => $name,
-                "title"     => $topic["name"][$lang],
-                "icon"      => $topic["icon"],
-                "for_admin" => $topic["for_admin"],
-                "questions" => $questions
+                "url"        => $name,
+                "title"      => $topic["title"][$lang] ?? $topic["title"][getDefaultLanguage()],
+                "icon"       => $topic["icon"],
+                "for_admin"  => $topic["for_admin"],
+                "translated" => file_exists("$this->faqDir/$name.$lang.md"),
+                "questions"  => $questions
             ];
         }
 
         return $topics;
     }
 
-    public function getTopic(string $name, string $lang): array
+    public function getTopic(string $name, string $lang, bool $admin): array
     {
         $topic = [];
 
@@ -104,10 +118,18 @@ class FAQ
             return $topic;
         }
 
+        if (!$topics[$name]["enabled"]) {
+            return $topic;
+        } 
+
+        if (!$admin and $topics[$name]["for_admin"]) {
+            return $topic;
+        }
+
         if (file_exists("$this->faqDir/$name.$lang.md")) {
             $file = "$this->faqDir/$name.$lang.md";
-        } elseif (file_exists("$this->faqDir/$name.md")) {
-            $file = "$this->faqDir/$name.md";
+        } elseif (file_exists($this->faqDir . "/" . $name . "." . getDefaultLanguage() . ".md")) {
+            $file = $this->faqDir . "/" . $name . "." . getDefaultLanguage() . ".md";
         } else {
             return $topic;
         }
@@ -133,14 +155,8 @@ class FAQ
             $item['a'] = (new Parsedown())->text(trim($item['a']));
         }
 
-        if (isset($topics[$name]["name"][$lang])) {
-            $title = $topics[$name]["name"][$lang];
-        } else {
-            $title = $topics[$name]["name"]["_"];
-        }
-
         $topic = [
-            "title"     => $title,
+            "title"     => $topics[$name]["title"][$lang] ?? $topics[$name]["title"][getDefaultLanguage()],
             "url"       => $name,
             "icon"      => $topics[$name]["icon"],
             "for_admin" => $topics[$name]["for_admin"],
